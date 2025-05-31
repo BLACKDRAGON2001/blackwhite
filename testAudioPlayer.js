@@ -1,9 +1,7 @@
-// Add this to your existing test.js file
+// Logout from HomePage
 document.getElementById("title").addEventListener("click", function() {
-    // Clear HomePage player state
     localStorage.removeItem("musicIndex");
     localStorage.removeItem("isMusicPaused");
-    // Existing logout logic
     document.getElementById("HomePage").style.display = "none";
     document.getElementById("LoginPage").style.display = "block";
     localStorage.removeItem("LoginTime");
@@ -12,11 +10,10 @@ document.getElementById("title").addEventListener("click", function() {
     refreshPage();
   });
   
+  // Logout from DisguisePage
   document.getElementById("title2").addEventListener("click", function() {
-    // Clear DisguisePage player state
     localStorage.removeItem("musicIndex2");
     localStorage.removeItem("isMusicPaused2");
-    // Existing logout logic
     document.getElementById("DisguisePage").style.display = "none";
     document.getElementById("LoginPage").style.display = "block";
     localStorage.removeItem("LoginTime");
@@ -31,12 +28,10 @@ document.getElementById("title").addEventListener("click", function() {
         this.musicIndex = 1;
         localStorage.setItem(`musicIndex${suffix}`, 1);
       }
-      // Configure media folders based on page
       this.suffix = suffix;
       this.imageFolder = suffix === '2' ? 'ImagesDisguise/' : 'Images/';
-      this.videoFolder = suffix === '2' ? 'VideosDisguise/' : 'Videos/';
+      this.videoFolder = suffix === '2' ? '' : 'Videos/'; // Not used anymore
   
-      // Element selectors
       this.wrapper = document.querySelector(`#wrapper${suffix}`);
       this.coverArea = this.wrapper.querySelector(".img-area");
       this.musicName = this.wrapper.querySelector(".song-details .name");
@@ -45,7 +40,7 @@ document.getElementById("title").addEventListener("click", function() {
       this.prevBtn = this.wrapper.querySelector(`#prev${suffix}`);
       this.nextBtn = this.wrapper.querySelector(`#next${suffix}`);
       this.mainAudio = this.wrapper.querySelector(`#main-audio${suffix}`);
-      this.videoAd = this.wrapper.querySelector(`#video${suffix}`);
+      this.videoAd = suffix === '2' ? null : this.wrapper.querySelector(`#video${suffix}`);
       this.progressArea = this.wrapper.querySelector(".progress-area");
       this.progressBar = this.progressArea.querySelector(".progress-bar");
       this.musicList = this.wrapper.querySelector(".music-list");
@@ -57,7 +52,6 @@ document.getElementById("title").addEventListener("click", function() {
       this.ulTag = this.wrapper.querySelector("ul");
       this.repeatBtn = this.wrapper.querySelector(`#repeat-plist${suffix}`);
   
-      // Player state
       this.musicIndex = 1;
       this.isMusicPaused = true;
       this.isShuffleMode = false;
@@ -77,7 +71,6 @@ document.getElementById("title").addEventListener("click", function() {
     }
   
     setupEventListeners() {
-      // Control events
       this.playPauseBtn.addEventListener("click", () => this.togglePlayPause());
       this.prevBtn.addEventListener("click", () => this.changeMusic(-1));
       this.nextBtn.addEventListener("click", () => this.changeMusic(1));
@@ -87,15 +80,16 @@ document.getElementById("title").addEventListener("click", function() {
       this.modeToggle.addEventListener("click", () => this.toggleDarkMode());
       this.muteButton.addEventListener("click", () => this.handleMute());
       this.repeatBtn.addEventListener("click", () => this.handleRepeat());
+      this.musicName.addEventListener("click", () => this.toggleVideoControls());
   
-      // Media events
       this.mainAudio.addEventListener("timeupdate", (e) => this.updateProgress(e));
       this.mainAudio.addEventListener("ended", () => this.handleSongEnd());
       this.mainAudio.addEventListener("pause", () => this.handleAudioPause());
       this.mainAudio.addEventListener("play", () => this.handleAudioPlay());
-      this.videoAd.addEventListener("ended", () => this.handleVideoEnd());
   
-      this.musicName.addEventListener("click", () => this.toggleVideoControls());
+      if (this.videoAd) {
+        this.videoAd.addEventListener("ended", () => this.handleVideoEnd());
+      }
     }
   
     loadPersistedState() {
@@ -112,58 +106,46 @@ document.getElementById("title").addEventListener("click", function() {
     }
   
     toggleVideoControls() {
-      if (!this.videoAd.classList.contains("bigger-video")) return;
-    
+      if (!this.videoAd || !this.videoAd.classList.contains("bigger-video")) return;
       this.controlsToggledManually = !this.controlsToggledManually;
       this.videoAd.controls = this.controlsToggledManually;
-    
+  
       if (!this.controlsToggledManually && this.mainAudio.paused) {
-        this.videoAd.play()
+        this.videoAd.play();
       }
     }
-      
   
     loadMusic(index) {
-        const music = this.isShuffleMode ? 
-          this.shuffledOrder[index - 1] : 
-          this.originalOrder[index - 1];
-      
-        this.musicName.textContent = music.name;
-        this.musicArtist.textContent = music.artist;
-      
-        const { coverType = 'Images', src, type = 'jpg' } = music;
-        this.coverArea.innerHTML = '';
-      
-        const mediaElement = coverType === 'video' ?
-          this.createVideoElement(src, type) :
-          this.createImageElement(src, type);
-      
-        this.coverArea.appendChild(mediaElement);
-      
-        // 👇 LOCAL AUDIO path (unchanged)
-        this.mainAudio.src = `Audio/${src}.mp3`;
-      
-        // 👇 ✅ UPDATED: Use public R2 video URL instead of local folder
-        this.videoAd.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.mp4`;
-      
-        localStorage.setItem(`musicIndex${this.suffix}`, index);
-        this.updatePlayingSong();
-      }
-      
+      const music = this.isShuffleMode ? this.shuffledOrder[index - 1] : this.originalOrder[index - 1];
+      this.musicName.textContent = music.name;
+      this.musicArtist.textContent = music.artist;
   
-      createVideoElement(src, type) {
-        const video = document.createElement('video');
-      
-        // ✅ Point to Cloudflare R2 public URL
-        video.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.${type}`;
-      
-        video.controls = true;
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        video.classList.add("overlay-video");
-        return video;
-      }      
+      const { coverType = 'Images', src, type = 'jpg' } = music;
+      this.coverArea.innerHTML = '';
+      const mediaElement = coverType === 'video' && this.suffix !== '2' ?
+        this.createVideoElement(src, type) :
+        this.createImageElement(src, type);
+      this.coverArea.appendChild(mediaElement);
+  
+      this.mainAudio.src = `Audio/${src}.mp3`;
+      if (this.videoAd) {
+        this.videoAd.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.mp4`;
+      }
+  
+      localStorage.setItem(`musicIndex${this.suffix}`, index);
+      this.updatePlayingSong();
+    }
+  
+    createVideoElement(src, type) {
+      const video = document.createElement('video');
+      video.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.${type}`;
+      video.controls = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.classList.add("overlay-video");
+      return video;
+    }
   
     createImageElement(src, type) {
       const img = document.createElement('img');
@@ -182,8 +164,10 @@ document.getElementById("title").addEventListener("click", function() {
       this.mainAudio.play();
       this.isMusicPaused = false;
       localStorage.setItem(`isMusicPaused${this.suffix}`, false);
-      this.toggleVideoDisplay(false);
-      this.resetVideoSize(); // Reset size and controls
+      if (this.videoAd) {
+        this.toggleVideoDisplay(false);
+        this.resetVideoSize();
+      }
     }
   
     pauseMusic() {
@@ -192,39 +176,37 @@ document.getElementById("title").addEventListener("click", function() {
       this.mainAudio.pause();
       this.isMusicPaused = true;
       localStorage.setItem(`isMusicPaused${this.suffix}`, true);
-      this.toggleVideoDisplay(true);
-      this.muteVideo();
-      this.resetVideoSize(); // Reset size and controls
+      if (this.videoAd) {
+        this.toggleVideoDisplay(true);
+        this.muteVideo();
+        this.resetVideoSize();
+      }
     }
   
     resetVideoSize() {
+      if (!this.videoAd) return;
       this.videoAd.classList.remove("bigger-video");
       this.videoAd.classList.add("overlay-video");
       this.videoAd.controls = false;
       this.controlsToggledManually = false;
       this.videoAd.loop = true;
-    }  
+    }
   
     toggleVideoDisplay(show) {
+      if (!this.videoAd) return;
       this.videoAd.style.display = show ? "block" : "none";
       show ? this.videoAd.play() : this.videoAd.pause();
     }
   
     muteVideo() {
-      this.videoAd.muted = true;
+      if (this.videoAd) this.videoAd.muted = true;
     }
   
     changeMusic(direction) {
-      if (this.isShuffleMode) {
-        this.musicIndex = (this.musicIndex + direction + this.shuffledOrder.length - 1) % 
-                          this.shuffledOrder.length + 1;
-      } else {
-        this.musicIndex = (this.musicIndex + direction + this.originalOrder.length - 1) % 
-                          this.originalOrder.length + 1;
-      }
+      const length = this.isShuffleMode ? this.shuffledOrder.length : this.originalOrder.length;
+      this.musicIndex = (this.musicIndex + direction + length - 1) % length + 1;
       this.loadMusic(this.musicIndex);
       this.playMusic();
-      this.resetVideoSize();
     }
   
     handleProgressClick(e) {
@@ -238,14 +220,15 @@ document.getElementById("title").addEventListener("click", function() {
       const { currentTime, duration } = e.target;
       this.progressBar.style.width = `${(currentTime / duration) * 100}%`;
   
-      const currentMin = Math.floor(currentTime / 60);
-      const currentSec = Math.floor(currentTime % 60).toString().padStart(2, "0");
-      this.wrapper.querySelector(".current-time").textContent = `${currentMin}:${currentSec}`;
+      const formatTime = (time) => {
+        const min = Math.floor(time / 60);
+        const sec = Math.floor(time % 60).toString().padStart(2, "0");
+        return `${min}:${sec}`;
+      };
   
+      this.wrapper.querySelector(".current-time").textContent = formatTime(currentTime);
       if (!isNaN(duration)) {
-        const totalMin = Math.floor(duration / 60);
-        const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
-        this.wrapper.querySelector(".max-duration").textContent = `${totalMin}:${totalSec}`;
+        this.wrapper.querySelector(".max-duration").textContent = formatTime(duration);
       }
     }
   
@@ -279,24 +262,19 @@ document.getElementById("title").addEventListener("click", function() {
   
     handleSongEnd() {
       const mode = this.repeatBtn.textContent;
-    
       if (mode === "repeat_one") {
-        // Replay the same song
         this.mainAudio.currentTime = 0;
         this.playMusic();
       } else if (this.isShuffleMode || mode === "shuffle") {
-        // Shuffle to a random song
         this.musicIndex = Math.floor(Math.random() * this.shuffledOrder.length) + 1;
         this.loadMusic(this.musicIndex);
         this.playMusic();
       } else {
-        // Go to next song normally
         this.musicIndex = (this.musicIndex % this.originalOrder.length) + 1;
         this.loadMusic(this.musicIndex);
         this.playMusic();
       }
     }
-    
   
     toggleMusicList() {
       this.musicList.classList.toggle("show");
@@ -311,7 +289,6 @@ document.getElementById("title").addEventListener("click", function() {
       musicArray.forEach((music, i) => {
         const liTag = document.createElement("li");
         liTag.setAttribute("li-index", i + 1);
-  
         liTag.innerHTML = `
           <div class="row">
             <span>${music.name}</span>
@@ -323,7 +300,6 @@ document.getElementById("title").addEventListener("click", function() {
   
         this.ulTag.appendChild(liTag);
         const liAudioTag = liTag.querySelector(`.${music.src}`);
-        
         liAudioTag.addEventListener("loadeddata", () => {
           const duration = liAudioTag.duration;
           const totalMin = Math.floor(duration / 60);
@@ -344,33 +320,26 @@ document.getElementById("title").addEventListener("click", function() {
       allLiTags.forEach(liTag => {
         const audioTag = liTag.querySelector(".audio-duration");
         const isPlaying = liTag.getAttribute("li-index") == this.musicIndex;
-    
+  
         if (!audioTag.hasAttribute("t-duration")) {
           audioTag.setAttribute("t-duration", audioTag.textContent);
         }
-    
+  
         liTag.classList.toggle("playing", isPlaying);
         audioTag.textContent = isPlaying ? "Playing" : audioTag.getAttribute("t-duration");
       });
     }
-    
   
     toggleDarkMode() {
       const isDarkMode = this.wrapper.classList.toggle("dark-mode");
       document.getElementById(`fontawesome-icons${this.suffix}`).classList.toggle("Dark");
   
-      if (isDarkMode) {
-        document.body.style.backgroundColor = "white";
-        this.listcolourblack();
-      } else {
-        document.body.style.backgroundColor = "black";
-        this.listcolourwhite();
-      }
+      document.body.style.backgroundColor = isDarkMode ? "white" : "black";
+      isDarkMode ? this.listcolourblack() : this.listcolourwhite();
     }
   
     handleMute() {
-      const isAudioPlaying = !this.isMusicPaused;
-      if (isAudioPlaying && !this.isMuted) {
+      if (this.isMusicPaused || !this.videoAd) {
         this.muteButton.disabled = true;
         return;
       }
@@ -418,39 +387,27 @@ document.getElementById("title").addEventListener("click", function() {
     }
   }
   
+  // Video size toggle for homePlayer only
   function handleSize() {
     const sizer = document.getElementById("video");
-  
-    sizer.addEventListener("click", () => {
-        if (sizer.classList.contains("overlay-video")) {
-        sizer.classList.replace("overlay-video", "bigger-video");
-        } else {
-        sizer.classList.replace("bigger-video", "overlay-video");
-        }
-    });
-  }
-  
-  function handleSize() {
-    const sizer = document.getElementById("video");
+    if (!sizer) return;
   
     if (!sizer.classList.contains("overlay-video") && !sizer.classList.contains("bigger-video")) {
       sizer.classList.add("overlay-video");
     }
   
     sizer.addEventListener("click", () => {
-      const player = window.homePlayer || window.disguisePlayer;
-      
-      // Prevent size toggle if controls are shown by user
+      const player = window.homePlayer;
       if (sizer.classList.contains("bigger-video") && player.controlsToggledManually) return;
-  
       sizer.classList.toggle("overlay-video");
       sizer.classList.toggle("bigger-video");
     });
   }
   
-  // Initialize players when DOM loads
+  // Init
   document.addEventListener("DOMContentLoaded", () => {
     window.homePlayer = new MusicPlayer();       // Original page
-    window.disguisePlayer = new MusicPlayer('2'); // Disguise page
+    window.disguisePlayer = new MusicPlayer('2'); // Disguise page (no video)
     handleSize();
   });
+  
