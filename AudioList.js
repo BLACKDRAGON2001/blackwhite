@@ -336,6 +336,13 @@ let allMusic = [
     },
 
     {
+        name: "On My Own",
+        artist: "Darci",
+        src: "OnMyOwn",
+        coverType: "Images"
+    },
+
+    {
         name: "Chammak Challo",
         artist: "Akon",
         src: "ChammakChallo",
@@ -381,6 +388,41 @@ let allMusic = [
         name: "Collide",
         artist: "Justine Skye and Tyga",
         src: "Collide",
+        coverType: "Images"
+    },
+
+    {
+        name: "Collide Sped Up Version",
+        artist: "Justine Skye and Tyga",
+        src: "Collide2",
+        coverType: "Images"
+    },
+
+    {
+        name: "Just Dance",
+        artist: "EQRIC And ISAEV",
+        src: "JustDance",
+        coverType: "Images"
+    },
+
+    {
+        name: "Without Me",
+        artist: "Two Hounds",
+        src: "WithoutMe",
+        coverType: "Images"
+    },
+
+    {
+        name: "Down",
+        artist: "Arc North",
+        src: "Down",
+        coverType: "Images"
+    },
+
+    {
+        name: "Payphone",
+        artist: "Alema And Robbe",
+        src: "Payphone",
         coverType: "Images"
     },
 
@@ -728,6 +770,20 @@ let allMusic = [
     },
 
     {
+        name: "Ara",
+        artist: "Zeynep Bastik",
+        src: "Ara",
+        coverType: "Images"
+    },
+
+    {
+        name: "Lan",
+        artist: "Zeynep Bastik",
+        src: "Lan",
+        coverType: "Images"
+    },
+
+    {
         name: "Habibi",
         artist: "Richy Rich",
         src: "Habibi",
@@ -738,6 +794,13 @@ let allMusic = [
         name: "KAMNH",
         artist: "Emin and Jony",
         src: "Kamnh",
+        coverType: "Images"
+    },
+
+    {
+        name: "KAMNH Long Version",
+        artist: "Emin and Jony",
+        src: "KamnhLongVer",
         coverType: "Images"
     },
 
