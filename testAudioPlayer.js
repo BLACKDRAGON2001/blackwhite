@@ -339,16 +339,18 @@ document.getElementById("title").addEventListener("click", function() {
     }
   
     handleMute() {
-      if (this.isMusicPaused || !this.videoAd) {
+      const isAudioPlaying = !this.isMusicPaused;
+      if (isAudioPlaying && !this.isMuted) {
         this.muteButton.disabled = true;
         return;
       }
-  
+    
       this.videoAd.muted = !this.videoAd.muted;
       this.isMuted = this.videoAd.muted;
       this.muteButton.classList.toggle("muted", this.isMuted);
       this.muteButton.classList.toggle("unmuted", !this.isMuted);
     }
+    
   
     handleAudioPause() {
       this.muteButton.disabled = false;
