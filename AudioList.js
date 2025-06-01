@@ -357,6 +357,20 @@ let allMusic = [
     },
 
     {
+        name: "Bom Diggy Diggy",
+        artist: "Zack Knight And Jasmin Walia",
+        src: "BomDiggy",
+        coverType: "Images"
+    },
+
+    {
+        name: "Dum De Dum",
+        artist: "Zack Knight And Jasmin Walia",
+        src: "DumDeDum",
+        coverType: "Images"
+    },
+
+    {
         name: "Blinding Lights",
         artist: "Weeknd",
         src: "BlindingLights",
@@ -378,9 +392,23 @@ let allMusic = [
     },
 
     {
+        name: "Hiserim",
+        artist: "Serhat Dumas",
+        src: "Hislerim",
+        coverType: "Images"
+    },
+
+    {
         name: "Choix De Vie",
         artist: "Anas x Randall",
         src: "ChoixDeVie",
+        coverType: "Images"
+    },
+
+    {
+        name: "Plevne",
+        artist: "CVRTOON",
+        src: "Plevne",
         coverType: "Images"
     },
 
@@ -847,6 +875,13 @@ let allMusic = [
     },
 
     {
+        name: "Darkside",
+        artist: "Neoni",
+        src: "Darkside",
+        coverType: "Images"
+    },
+
+    {
         name: "The Drum",
         artist: "Alan Walker",
         src: "TheDrum",
@@ -962,6 +997,13 @@ let allMusic = [
         name: "Dust Til Dawn",
         artist: "Sia and Zayn",
         src: "DuskTilDawn",
+        coverType: "Images"
+    },
+
+    {
+        name: "Seven",
+        artist: "Jungkook",
+        src: "Seven",
         coverType: "Images"
     },
 
