@@ -33,6 +33,7 @@ const accountCredentials = {
     account2: { username: "Dracula", password: "CrimsonVampire" },
     account3: { username: "Spartacus Claudio", password: "Morningstar2000" },
     account4: { username: "Alyssa", password: "Valentinean" },
+    account5: { username: "Celesteen", password: "Jasminean" },
 };
 
 const LoginTimeout = 20 * 60 * 1000; // 20 minutes
