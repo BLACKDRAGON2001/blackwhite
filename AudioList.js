@@ -336,6 +336,27 @@ let allMusic = [
     },
 
     {
+        name: "Did It First",
+        artist: "Central Cee",
+        src: "DidItFirst",
+        coverType: "Images"
+    },
+
+    {
+        name: "Deli",
+        artist: "Ice Spice",
+        src: "Deli",
+        coverType: "Images"
+    },
+
+    {
+        name: "In Ha Mood",
+        artist: "Ice Spice",
+        src: "InHaMood",
+        coverType: "Images"
+    },
+
+    {
         name: "On My Own",
         artist: "Darci",
         src: "OnMyOwn",
@@ -1046,6 +1067,13 @@ let allMusic = [
         name: "Under The Influence",
         artist: "Chris Brown",
         src: "UnderTheInflucence",
+        coverType: "Images"
+    },
+
+    {
+        name: "In The Stars",
+        artist: "Benson Boone",
+        src: "InTheStars",
         coverType: "Images"
     },
 
