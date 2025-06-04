@@ -1,22 +1,30 @@
-// Logout functions optimized with event delegation
 document.addEventListener('click', function(e) {
-  if (e.target.id === 'title') {
-      handleLogout('HomePage');
-  } else if (e.target.id === 'title2') {
-      handleLogout('DisguisePage');
+  if (e.target.id === 'title' || e.target.id === 'title2') {
+      clearAllAudioLocalStorage();
+      const page = e.target.id === 'title' ? 'HomePage' : 'DisguisePage';
+      handleLogout(page);
   }
 });
 
+function clearAllAudioLocalStorage() {
+  Object.keys(localStorage).forEach(key => {
+    if (
+      key.startsWith('musicIndex') ||
+      key.startsWith('isMusicPaused')
+      // add other audio-related keys here if any
+    ) {
+      localStorage.removeItem(key);
+    }
+  });
+}
+
 function handleLogout(page) {
-  const storagePrefix = page === 'DisguisePage' ? '2' : '';
-  localStorage.removeItem(`musicIndex${storagePrefix}`);
-  localStorage.removeItem(`isMusicPaused${storagePrefix}`);
   document.getElementById(page).style.display = 'none';
-  document.getElementById('LoginPage').style.display = 'block';
+  //document.getElementById('LoginPage').style.display = 'block';
   localStorage.removeItem('LoginTime');
   document.body.style.backgroundColor = 'white';
   clearInputFields();
-  refreshPage();
+  location.reload();
 }
 
 class MusicPlayer {

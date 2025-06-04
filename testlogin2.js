@@ -1,29 +1,24 @@
-function changeText(isSuccessful) {
-    const message =
-        isSuccessful ? "LOGIN SUCCESSFUL" : "LOGIN UNSUCCESSFUL";
+// Cache DOM elements for better performance
+const PAGES = ["LoginPage", "AccountsPage", "AccountLoginPage", "HomePage", "DisguisePage"];
+const PAGE_ELEMENTS = PAGES.reduce((acc, id) => {
+    acc[id] = document.getElementById(id);
+    return acc;
+}, {});
 
-    const messageBox = document.getElementById("MessageBox");
-    const messageBox2 = document.getElementById("MessageBox2");
+const INPUT_ELEMENTS = {
+    username: document.getElementById("username"),
+    password: document.getElementById("password"),
+    accountUsername: document.getElementById("accountUsername"),
+    accountPassword: document.getElementById("accountPassword"),
+    messageBox: document.getElementById("MessageBox"),
+    messageBox2: document.getElementById("MessageBox2")
+};
 
-    if (document.getElementById("AccountLoginPage").style.display === "block") {
-        messageBox2.textContent = message;
-    } else {
-        messageBox.textContent = message;
-    }
-}
-
-function clearInputFields() {
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-    document.getElementById("accountUsername").value = "";
-    document.getElementById("accountPassword").value = "";
-    document.getElementById("MessageBox").textContent = "";
-    document.getElementById("MessageBox2").textContent = "";
-}
-
+// Primary login credentials
 const correctUsername = "Admin";
 const correctPassword = "Celebrations00";
 
+// Account credentials
 const accountCredentials = {
     account1: { username: "Castor", password: "Lightbringer" },
     account2: { username: "Dracula", password: "CrimsonVampire" },
@@ -34,48 +29,24 @@ const accountCredentials = {
 const LoginTimeout = 20 * 60 * 1000; // 20 minutes
 let selectedAccount = null;
 
-function resetPlayers() {
-    // Clear localStorage keys
-    localStorage.removeItem("musicIndex");
-    localStorage.removeItem("isMusicPaused");
-    localStorage.removeItem("musicIndex2");
-    localStorage.removeItem("isMusicPaused2");
-
-    // Reset main audio player
-    const mainAudio = document.querySelector("#main-audio");
-    if (mainAudio) {
-        mainAudio.pause();
-        mainAudio.currentTime = 0;
+function changeText(isSuccessful) {
+    const message = isSuccessful ? "LOGIN SUCCESSFUL" : "LOGIN UNSUCCESSFUL";
+    
+    // Determine which message box to use
+    if (PAGE_ELEMENTS.AccountLoginPage.style.display === "block") {
+        INPUT_ELEMENTS.messageBox2.textContent = message;
+    } else {
+        INPUT_ELEMENTS.messageBox.textContent = message;
     }
+}
 
-    // Reset second audio player
-    const mainAudio2 = document.querySelector("#main-audio2");
-    if (mainAudio2) {
-        mainAudio2.pause();
-        mainAudio2.currentTime = 0;
-    }
-
-    // Reset HomePage video, hide it
-    const video = document.querySelector("#video");
-    if (video) {
-        video.pause();
-        video.currentTime = 0;
-        video.style.display = "none";  // Hide video on reset
-        video.classList.remove("bigger-video");
-        video.classList.add("overlay-video");
-        video.controls = false;
-    }
-
-    // Reset DisguisePage video, keep visible but reset time
-    const video2 = document.querySelector("#video2");
-    if (video2) {
-        video2.pause();
-        video2.currentTime = 0;
-        video2.style.display = "block"; // Ensure it's visible
-        video2.classList.remove("bigger-video");
-        video2.classList.add("overlay-video");
-        video2.controls = false;
-    }
+function clearInputFields() {
+    INPUT_ELEMENTS.username.value = "";
+    INPUT_ELEMENTS.password.value = "";
+    INPUT_ELEMENTS.accountUsername.value = "";
+    INPUT_ELEMENTS.accountPassword.value = "";
+    INPUT_ELEMENTS.messageBox.textContent = "";
+    INPUT_ELEMENTS.messageBox2.textContent = "";
 }
 
 function setLastPage(pageId) {
@@ -85,11 +56,31 @@ function setLastPage(pageId) {
     }
 }
 
+function showPage(pageId) {
+    // Hide all pages efficiently
+    PAGES.forEach(id => {
+        PAGE_ELEMENTS[id].style.display = "none";
+    });
+
+    PAGE_ELEMENTS[pageId].style.display = "block";
+
+    // Set background color based on page
+    if (["LoginPage", "AccountsPage", "AccountLoginPage"].includes(pageId)) {
+        document.body.style.backgroundColor = "white";
+    } else {
+        document.body.style.backgroundColor = "black";
+    }
+
+    setLastPage(pageId);
+    clearInputFields();
+}
+
 function checkLoginStatus() {
     const currentTime = new Date().getTime();
     const accountsLoginTime = localStorage.getItem("AccountsLoginTime");
     const lastPage = localStorage.getItem("LastPage");
 
+    // Always persist HomePage and DisguisePage regardless of timeout
     if (lastPage === "HomePage") {
         showPage("HomePage");
     } else if (lastPage === "DisguisePage") {
@@ -101,94 +92,78 @@ function checkLoginStatus() {
     ) {
         showPage(lastPage);
     } else {
-        resetPlayers();  // Reset on timeout or no valid session
         showPage("LoginPage");
     }
 }
 
-function showPage(pageId) {
-    const pages = ["LoginPage", "AccountsPage", "AccountLoginPage", "HomePage", "DisguisePage"];
-    pages.forEach(id => document.getElementById(id).style.display = "none");
+// Set up event listeners once
+document.addEventListener("DOMContentLoaded", function() {
+    // Main login button
+    document.getElementById("signinBtn").addEventListener("click", function() {
+        const username = INPUT_ELEMENTS.username.value;
+        const password = INPUT_ELEMENTS.password.value;
 
-    document.getElementById(pageId).style.display = "block";
-
-    if (["LoginPage", "AccountsPage", "AccountLoginPage"].includes(pageId)) {
-        document.body.style.backgroundColor = "white";
-    } else {
-        document.body.style.backgroundColor = "black";
-    }
-
-    setLastPage(pageId);
-    clearInputFields();
-
-    // On HomePage show video again
-    if (pageId === "HomePage") {
-        const video = document.querySelector("#video");
-        if (video) {
-            video.style.display = "block";
-        }
-    }
-}
-
-document.getElementById("signinBtn").addEventListener("click", function () {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    if (username === correctUsername && password === correctPassword) {
-        showPage("AccountsPage");
-        changeText(true);
-    } else {
-        changeText(false);
-    }
-});
-
-document.querySelectorAll(".accountBtn").forEach(button => {
-    button.addEventListener("click", function () {
-        selectedAccount = this.dataset.account;
-        showPage("AccountLoginPage");
-    });
-});
-
-document.getElementById("accountSigninBtn").addEventListener("click", function () {
-    const username = document.getElementById("accountUsername").value;
-    const password = document.getElementById("accountPassword").value;
-
-    if (
-        selectedAccount &&
-        username === accountCredentials[selectedAccount].username &&
-        password === accountCredentials[selectedAccount].password
-    ) {
-        changeText(true);
-        localStorage.setItem("AccountsLoginTime", new Date().getTime());
-
-        if (selectedAccount === "account3") {
-            showPage("HomePage");
-        } else if (selectedAccount === "account4") {
-            showPage("DisguisePage");
-        } else {
+        if (username === correctUsername && password === correctPassword) {
             showPage("AccountsPage");
+            changeText(true);
+        } else {
+            changeText(false);
         }
-    } else {
-        changeText(false);
-    }
-});
+    });
 
-document.getElementById("title").addEventListener("click", function () {
-    showPage("AccountsPage");
-});
+    // Account login button
+    document.getElementById("accountSigninBtn").addEventListener("click", function() {
+        const username = INPUT_ELEMENTS.accountUsername.value;
+        const password = INPUT_ELEMENTS.accountPassword.value;
 
-document.getElementById("title2").addEventListener("click", function () {
-    showPage("AccountsPage");
-});
+        if (
+            selectedAccount &&
+            username === accountCredentials[selectedAccount].username &&
+            password === accountCredentials[selectedAccount].password
+        ) {
+            changeText(true);
+            localStorage.setItem("AccountsLoginTime", new Date().getTime());
 
-document.getElementById("accountsLogin-title").addEventListener("click", function () {
-    showPage("AccountsPage");
-});
+            if (selectedAccount === "account3") {
+                showPage("HomePage");
+            } else if (selectedAccount === "account4") {
+                showPage("DisguisePage");
+            } else {
+                showPage("AccountsPage");
+            }
+        } else {
+            changeText(false);
+        }
+    });
 
-document.getElementById("accounts-title").addEventListener("click", function () {
-    localStorage.removeItem("AccountsLoginTime");
-    resetPlayers();  // Reset players on logout
-    showPage("LoginPage");
-});
+    // FIXED: Account buttons event handling
+    document.querySelectorAll(".accountBtn").forEach(button => {
+        button.addEventListener("click", function() {
+            selectedAccount = this.dataset.account;
+            showPage("AccountLoginPage");
+        });
+    });
 
-document.addEventListener("DOMContentLoaded", checkLoginStatus);
+    // Navigation buttons
+    const NAV_ELEMENTS = [
+        { id: "title", page: "AccountsPage" },
+        { id: "title2", page: "AccountsPage" },
+        { id: "accountsLogin-title", page: "AccountsPage" },
+        { id: "accounts-title", page: "LoginPage" }
+    ];
+    
+    NAV_ELEMENTS.forEach(item => {
+        const element = document.getElementById(item.id);
+        if (element) {
+            element.addEventListener("click", function() {
+                if (item.id === "accounts-title") {
+                    localStorage.removeItem("AccountsLoginTime");
+                }
+                showPage(item.page);
+            });
+        }
+    });
+
+    // Initial page load
+    checkLoginStatus();
+});

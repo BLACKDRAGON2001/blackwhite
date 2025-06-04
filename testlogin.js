@@ -31,7 +31,7 @@ const correctPassword = "Celebrations00";
 const accountCredentials = {
     account1: { username: "Castor", password: "Lightbringer" },
     account2: { username: "Dracula", password: "CrimsonVampire" },
-    account3: { username: "Spartacus Claudio", password: "Morningstar2000" },
+    account3: { username: "Spartacus Claudio", password: "Morningstar00" },
     account4: { username: "Alyssa", password: "Valentinean" },
 };
 
