@@ -312,45 +312,51 @@ document.addEventListener('click', function(e) {
     populateMusicList(musicArray) {
         const fragment = document.createDocumentFragment();
       
-        musicArray.forEach((music, i) => {
-          const liTag = document.createElement("li");
-          liTag.setAttribute("li-index", i + 1);
-          liTag.innerHTML = `
-            <div class="row">
-              <span>${music.name}</span>
-              <p>${music.artist}</p>
-            </div>
-            <span class="audio-duration" data-src="${music.src}">Loading...</span>
-          `;
-      
-          liTag.addEventListener("mouseenter", () => {
-            const span = liTag.querySelector(".audio-duration");
-            if (span.dataset.loaded) return;
-      
-            const tempAudio = new Audio(`Audio/${span.dataset.src}.mp3`);
+        // Create an array of promises to load all durations
+        const durationPromises = musicArray.map((music) => {
+          return new Promise((resolve) => {
+            const tempAudio = new Audio(`Audio/${music.src}.mp3`);
             tempAudio.addEventListener("loadedmetadata", () => {
               const duration = tempAudio.duration;
               if (!isNaN(duration) && isFinite(duration)) {
                 const totalMin = Math.floor(duration / 60);
                 const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
-                span.textContent = `${totalMin}:${totalSec}`;
-                span.dataset.loaded = "true";
+                resolve(`${totalMin}:${totalSec}`);
+              } else {
+                resolve("0:00");
               }
             });
+            tempAudio.addEventListener("error", () => resolve("0:00"));
           });
-      
-          liTag.addEventListener("click", () => {
-            this.musicIndex = i + 1;
-            this.loadMusic(this.musicIndex);
-            this.playMusic();
-          });
-      
-          fragment.appendChild(liTag); // <- crucial
         });
       
-        this.ulTag.innerHTML = ""; // or use removeChild in a loop if needed
-        this.ulTag.appendChild(fragment);
-      }      
+        // Once all durations are loaded
+        Promise.all(durationPromises).then((durations) => {
+          musicArray.forEach((music, i) => {
+            const liTag = document.createElement("li");
+            liTag.setAttribute("li-index", i + 1);
+      
+            liTag.innerHTML = `
+              <div class="row">
+                <span>${music.name}</span>
+                <p>${music.artist}</p>
+              </div>
+              <span class="audio-duration" data-src="${music.src}">${durations[i]}</span>
+            `;
+      
+            liTag.addEventListener("click", () => {
+              this.musicIndex = i + 1;
+              this.loadMusic(this.musicIndex);
+              this.playMusic();
+            });
+      
+            fragment.appendChild(liTag);
+          });
+      
+          this.ulTag.innerHTML = "";
+          this.ulTag.appendChild(fragment);
+        });
+      }        
   
     updatePlayingSong() {
         const allLiTags = this.ulTag.querySelectorAll("li");
