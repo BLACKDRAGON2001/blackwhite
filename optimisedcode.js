@@ -4,28 +4,93 @@ document.addEventListener('click', function(e) {
         const page = e.target.id === 'title' ? 'HomePage' : 'DisguisePage';
         handleLogout(page);
     }
-  });
+});
   
   function clearAllAudioLocalStorage() {
     Object.keys(localStorage).forEach(key => {
-      if (
-        key.startsWith('musicIndex') ||
-        key.startsWith('isMusicPaused')
-        // add other audio-related keys here if any
-      ) {
-        localStorage.removeItem(key);
-      }
+        if (
+            key.startsWith('musicIndex') ||
+            key.startsWith('isMusicPaused') ||
+            key.startsWith('volumeLevel') ||
+            key.startsWith('playerState')
+            // add other audio-related keys here if any
+        ) {
+            localStorage.removeItem(key);
+        }
     });
+}
+
+  function clearInputFields() {
+  document.getElementById('usernameInput').value = '';
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('usernameInput2').value = '';
+  document.getElementById('passwordInput2').value = '';
+  document.getElementById('usernameInput3').value = '';
+  document.getElementById('passwordInput3').value = '';
   }
   
   function handleLogout(page) {
     document.getElementById(page).style.display = 'none';
-    //document.getElementById('LoginPage').style.display = 'block';
     localStorage.removeItem('LoginTime');
     document.body.style.backgroundColor = 'white';
     clearInputFields();
-    location.reload();
-  }
+    
+    // Reset both players
+    resetPlayer(window.homePlayer);
+    resetPlayer(window.disguisePlayer);
+    
+    // Ensure video is hidden (extra safeguard)
+    const videoElement = document.getElementById('video');
+    if (videoElement) {
+        videoElement.style.display = 'none';
+        videoElement.pause();
+        videoElement.currentTime = 0;
+    }
+}
+
+function resetPlayer(player) {
+    if (!player) return;
+    
+    // Reset player state
+    player.musicIndex = 1;
+    player.isMusicPaused = true;
+    player.isShuffleMode = false;
+    player.isMuted = false;
+    
+    // Reset UI elements
+    player.wrapper.classList.remove("paused");
+    player.wrapper.classList.remove("dark-mode");
+    player.playPauseBtn.querySelector("i").textContent = "play_arrow";
+    player.progressBar.style.width = "0%";
+    player.wrapper.querySelector(".current-time").textContent = "0:00";
+    player.wrapper.querySelector(".max-duration").textContent = "0:00";
+    player.repeatBtn.textContent = "repeat";
+    player.repeatBtn.title = "Playlist looped";
+    
+    // Hide video if it exists
+    if (player.videoAd) {
+        player.videoAd.style.display = "none";
+        player.videoAd.pause();
+        player.videoAd.currentTime = 0;
+        player.videoAd.muted = true;
+        player.videoAd.classList.remove("bigger-video");
+        player.videoAd.classList.add("overlay-video");
+        player.videoAd.controls = false;
+        player.controlsToggledManually = false;
+    }
+    
+    // Reload the first song
+    player.loadMusic(1);
+    player.pauseMusic();
+    
+    // Reset music list display
+    player.closeMusicList();
+    player.populateMusicList(player.originalOrder);
+    
+    // Reset dark mode if active
+    document.getElementById(`fontawesome-icons${player.suffix}`).classList.remove("Dark");
+    player.listcolourwhite();
+}
   
   class MusicPlayer {
     constructor(suffix = '') {

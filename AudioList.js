@@ -392,6 +392,13 @@ let allMusic = [
     },
 
     {
+        name: "Kamli",
+        artist: "Katrina Kaif",
+        src: "Kamli",
+        coverType: "Images"
+    },
+
+    {
         name: "Blinding Lights",
         artist: "Weeknd",
         src: "BlindingLights",
@@ -1067,6 +1074,13 @@ let allMusic = [
         name: "Under The Influence",
         artist: "Chris Brown",
         src: "UnderTheInflucence",
+        coverType: "Images"
+    },
+
+    {
+        name: "Under The Influence X Streets",
+        artist: "Chris Brown x Weeknd",
+        src: "UnderTheInfluenceXStreets",
         coverType: "Images"
     },
 
