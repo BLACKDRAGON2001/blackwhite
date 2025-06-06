@@ -805,6 +805,20 @@ let allMusic = [
     },
 
     {
+        name: "Dont Mind",
+        artist: "Sickick",
+        src: "DontMind",
+        coverType: "Images"
+    },
+
+    {
+        name: "Shape Of You",
+        artist: "Sickick",
+        src: "ShapeOfYou2",
+        coverType: "Images"
+    },
+
+    {
         name: "Snapchat Beat",
         artist: "Sickick",
         src: "SnapchatBeat",
