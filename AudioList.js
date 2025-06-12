@@ -140,6 +140,27 @@ let allMusic = [
     },
 
     {
+        name: "Los Voltaje",
+        artist: "Sayfalse",
+        src: "LosVoltaje",
+        coverType: "Images"
+    },
+
+    {
+        name: "Los Voltaje Violin",
+        artist: "Amanda Sze",
+        src: "LosVoltajeViolin",
+        coverType: "Images"
+    },
+
+    {
+        name: "Carol Of The Bells",
+        artist: "Lindsey Stirling",
+        src: "CarolOfTheBells",
+        coverType: "Images"
+    },
+
+    {
         name: "Akuma No Ko",
         artist: "Ai Higuchi",
         src: "AkumaNoKo",
@@ -178,6 +199,34 @@ let allMusic = [
         name: "Seasons Die One After Another",
         artist: "Amazarashi",
         src: "SeasonsDieOneAfterAnother",
+        coverType: "Images"
+    },
+
+    {
+        name: "Ecstasy",
+        artist: "Suicidal-Idol",
+        src: "Ecstasy",
+        coverType: "Images"
+    },
+
+    {
+        name: "Funk Universo",
+        artist: "Irokz",
+        src: "FunkUniverso",
+        coverType: "Images"
+    },
+
+    {
+        name: "Never See",
+        artist: "SPYRAL",
+        src: "NeverSee",
+        coverType: "Images"
+    },
+
+    {
+        name: "Sleepwalker X Icewhore",
+        artist: "Nxxkz",
+        src: "SleepwalkerXIcewhore",
         coverType: "Images"
     },
 
@@ -276,6 +325,13 @@ let allMusic = [
         name: "Greatest",
         artist: "Sia",
         src: "Greatest",
+        coverType: "Images"
+    },
+
+    {
+        name: "Poker Face",
+        artist: "Lady Gaga",
+        src: "PokerFace",
         coverType: "Images"
     },
 
@@ -791,6 +847,13 @@ let allMusic = [
     },
 
     {
+        name: "Mathematical Disrespect",
+        artist: "Lil Mabu",
+        src: "MathematicalDisrespect",
+        coverType: "Images"
+    },
+
+    {
         name: "Shameless",
         artist: "Camilla Cabello",
         src: "Shameless",
@@ -1043,6 +1106,13 @@ let allMusic = [
     },
 
     {
+        name: "Different",
+        artist: "LE SSERAFIM",
+        src: "Different",
+        coverType: "Images"
+    },
+
+    {
         name: "Seven",
         artist: "Jungkook",
         src: "Seven",
@@ -1060,6 +1130,13 @@ let allMusic = [
         name: "Butter",
         artist: "BTS",
         src: "Butter",
+        coverType: "Images"
+    },
+
+    {
+        name: "Hall Of Fame Nightcore Version",
+        artist: "Nightcore",
+        src: "HallOfFame",
         coverType: "Images"
     },
 

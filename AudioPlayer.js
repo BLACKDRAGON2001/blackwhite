@@ -408,17 +408,17 @@ class MusicPlayer {
   }
 }
 
-function handleSize() {
-  const sizer = document.getElementById("video");
+//function handleSize() {
+  //const sizer = document.getElementById("video");
 
-  sizer.addEventListener("click", () => {
-      if (sizer.classList.contains("overlay-video")) {
-      sizer.classList.replace("overlay-video", "bigger-video");
-      } else {
-      sizer.classList.replace("bigger-video", "overlay-video");
-      }
-  });
-}
+  //sizer.addEventListener("click", () => {
+      //if (sizer.classList.contains("overlay-video")) {
+      //sizer.classList.replace("overlay-video", "bigger-video");
+      //} else {
+      //sizer.classList.replace("bigger-video", "overlay-video");
+      //}
+  //});
+//}
 
 function handleSize() {
   const sizer = document.getElementById("video");
