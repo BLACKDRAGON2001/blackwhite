@@ -1,5 +1,12 @@
 let allMusic = [
     {
+        name: "Amaterasu",
+        artist: "ACE",
+        src: "Amaterasu",
+        coverType: "Images",
+    },
+
+    {
         name: "Die For You",
         artist: "The Weeknd and Ariana Grande",
         src: "DieForYou",
@@ -227,6 +234,13 @@ let allMusic = [
         name: "Sleepwalker X Icewhore",
         artist: "Nxxkz",
         src: "SleepwalkerXIcewhore",
+        coverType: "Images"
+    },
+
+    {
+        name: "Bruxo Psycho",
+        artist: "LVGHTER",
+        src: "BruxoPsycho",
         coverType: "Images"
     },
 
@@ -850,6 +864,13 @@ let allMusic = [
         name: "Mathematical Disrespect",
         artist: "Lil Mabu",
         src: "MathematicalDisrespect",
+        coverType: "Images"
+    },
+
+    {
+        name: "Royalty X Shameless",
+        artist: "HVNTR",
+        src: "RoyaltyXShameless",
         coverType: "Images"
     },
 
