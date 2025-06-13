@@ -182,6 +182,13 @@ let allMusic = [
     },
 
     {
+        name: "Gamushara",
+        artist: "Miyuna",
+        src: "Gamushara",
+        coverType: "Images"
+    },
+
+    {
         name: "Shinzou Wo Sasageo",
         artist: "Linked Horizon",
         src: "ShinzouWoSasageo",
