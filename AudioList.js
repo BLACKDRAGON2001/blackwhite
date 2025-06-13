@@ -665,6 +665,13 @@ let allMusic = [
     },
 
     {
+        name: "Somebody Else",
+        artist: "Allegra Jordyn",
+        src: "SomebodyElse",
+        coverType: "Images"
+    },
+
+    {
         name: "Taste Of The Divine",
         artist: "Shaker",
         src: "TasteOfTheDivine",

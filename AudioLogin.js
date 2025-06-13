@@ -14,10 +14,10 @@ function clearInputFields() {
 }
 
 // Hardcoded credentials for demonstration
-const correctUsername = "Admin";
-const correctPassword = "Morningstar2000";
-const otherUsername = "Admin";
-const otherPassword = "Valentinean";
+const correctUsername = "Morningstar00";
+const correctPassword = "Supremacus@29$$$";
+const otherUsername = "Valentinean00";
+const otherPassword = "Administrator@20$$$";
 const LoginTimeout = 50 * 60 * 1000; // 50 minutes in milliseconds
 
 function checkLoginStatus() {
