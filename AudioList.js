@@ -434,6 +434,13 @@ let allMusic = [
     },
 
     {
+        name: "Streets",
+        artist: "Doja Cat",
+        src: "Streets",
+        coverType: "Images"
+    },
+
+    {
         name: "On My Own",
         artist: "Darci",
         src: "OnMyOwn",
