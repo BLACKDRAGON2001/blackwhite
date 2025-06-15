@@ -476,6 +476,13 @@ let allMusic = [
     },
 
     {
+        name: "Kaavaalaa",
+        artist: "Tamannaah",
+        src: "Kaavaalaa",
+        coverType: "Images"
+    },
+
+    {
         name: "Kamli",
         artist: "Katrina Kaif",
         src: "Kamli",
