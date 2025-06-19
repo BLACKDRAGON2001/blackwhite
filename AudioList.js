@@ -490,6 +490,13 @@ let allMusic = [
     },
 
     {
+        name: "Starboy Slowed",
+        artist: "Weeknd",
+        src: "StarboySlowed",
+        coverType: "Images"
+    },
+
+    {
         name: "Blinding Lights",
         artist: "Weeknd",
         src: "BlindingLights",
@@ -528,6 +535,13 @@ let allMusic = [
         name: "Plevne",
         artist: "CVRTOON",
         src: "Plevne",
+        coverType: "Images"
+    },
+
+    {
+        name: "Gnarly",
+        artist: "Katseye",
+        src: "Gnarly",
         coverType: "Images"
     },
 
@@ -1029,6 +1043,27 @@ let allMusic = [
     },
 
     {
+        name: "Habits",
+        artist: "Tove Lo",
+        src: "Habits",
+        coverType: "Images"
+    },
+
+    {
+        name: "Habits Slowed",
+        artist: "Sloverb",
+        src: "HabitsSlowed",
+        coverType: "Images"
+    },
+
+    {
+        name: "Gasoline Slowed",
+        artist: "Halsey",
+        src: "GasolineSlowed",
+        coverType: "Images"
+    },
+
+    {
         name: "Darkside",
         artist: "Neoni",
         src: "Darkside",
@@ -1242,6 +1277,13 @@ let allMusic = [
         name: "After Dark x Sweater Weather",
         artist: "Mr. Kitty And The Neighbourhood",
         src: "AfterDarkXSweaterWeather",
+        coverType: "Images"
+    },
+
+    {
+        name: "After Dark x Sweater Weather Slowed",
+        artist: "Mr. Kitty And The Neighbourhood",
+        src: "AfterDarkXSweaterWeatherSlowed",
         coverType: "Images"
     },
 
