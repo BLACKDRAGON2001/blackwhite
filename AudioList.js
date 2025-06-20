@@ -1197,6 +1197,69 @@ let allMusic = [
     },
 
     {
+        name: "Unforgiven",
+        artist: "LE SSERAFIM",
+        src: "Unforgiven",
+        coverType: "Images"
+    },
+
+    {
+        name: "Drama",
+        artist: "Aespa",
+        src: "Drama",
+        coverType: "Images"
+    },
+
+    {
+        name: "Forever Young",
+        artist: "BLACKPINK",
+        src: "ForeverYoung",
+        coverType: "Images"
+    },
+
+    {
+        name: "Hands Up",
+        artist: "MEOVV",
+        src: "HandsUp",
+        coverType: "Images"
+    },
+
+    {
+        name: "Up Karina Solo",
+        artist: "Aespa",
+        src: "Up",
+        coverType: "Images"
+    },
+
+    {
+        name: "Like Jennie",
+        artist: "Jennie",
+        src: "LikeJennie",
+        coverType: "Images"
+    },
+
+    {
+        name: "Magnetic",
+        artist: "ILLIT",
+        src: "Magnetic",
+        coverType: "Images"
+    },
+
+    {
+        name: "Antifragile",
+        artist: "LE SSERAFIM",
+        src: "Antifragile",
+        coverType: "Images"
+    },
+
+    {
+        name: "Hold On Tight",
+        artist: "Aespa",
+        src: "HoldOnTight",
+        coverType: "Images"
+    },
+
+    {
         name: "Seven",
         artist: "Jungkook",
         src: "Seven",
