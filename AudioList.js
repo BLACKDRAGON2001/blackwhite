@@ -77,6 +77,13 @@ let allMusic = [
     },
 
     {
+        name: "In2",
+        artist: "WSTRN",
+        src: "In2",
+        coverType: "Images"
+    },
+
+    {
         name: "Touch",
         artist: "Katseye",
         src: "Touch",
