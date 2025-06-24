@@ -215,7 +215,7 @@ function resetPlayer(player) {
         this.coverArea.appendChild(mediaElement);
   
         // Preload audio and video
-        this.mainAudio.src = `Audio/${src}.mp3`;
+        this.mainAudio.src = `https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/${src}.mp3`;
         if (this.videoAd) {
             this.videoAd.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.mp4`;
         }
@@ -380,7 +380,7 @@ function resetPlayer(player) {
         // Create an array of promises to load all durations
         const durationPromises = musicArray.map((music) => {
           return new Promise((resolve) => {
-            const tempAudio = new Audio(`Audio/${music.src}.mp3`);
+            const tempAudio = new Audio(`https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/${music.src}.mp3`);
             tempAudio.addEventListener("loadedmetadata", () => {
               const duration = tempAudio.duration;
               if (!isNaN(duration) && isFinite(duration)) {

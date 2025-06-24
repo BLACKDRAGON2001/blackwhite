@@ -119,11 +119,8 @@ const DOMUtils = {
 class AudioManager {
   constructor() {
     this.audioCache = new Map();
-    this.durationCache = new Map();
     this.preloadQueue = [];
     this.maxCacheSize = 5;
-    // Cloudflare R2 bucket URL for audio files
-    this.audioBaseUrl = 'https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/';
   }
 
   // Preload audio with priority queue
@@ -131,7 +128,7 @@ class AudioManager {
     if (this.audioCache.has(src)) return Promise.resolve(this.audioCache.get(src));
     
     return new Promise((resolve, reject) => {
-      const audio = new Audio(`${this.audioBaseUrl}${src}.mp3`);
+      const audio = new Audio(`Audio/${src}.mp3`);
       audio.preload = 'auto';
       
       const cleanup = () => {
@@ -164,23 +161,20 @@ class AudioManager {
   }
 
   getDuration(src) {
-    if (this.durationCache.has(src)) return Promise.resolve(this.durationCache.get(src));
-
     return new Promise((resolve) => {
-      const audio = document.createElement('audio');
-      audio.preload = 'metadata';
-      audio.src = `${this.audioBaseUrl}${src}.mp3`;
+      if (this.audioCache.has(src)) {
+        resolve(this.audioCache.get(src).duration);
+        return;
+      }
 
-      audio.onloadedmetadata = () => {
+      const audio = new Audio(`Audio/${src}.mp3`);
+      audio.addEventListener('loadedmetadata', () => {
         const duration = isNaN(audio.duration) ? 0 : audio.duration;
-        this.durationCache.set(src, duration);
         resolve(duration);
-      };
-
-      audio.onerror = () => resolve(0);
+      }, { once: true });
+      audio.addEventListener('error', () => resolve(0), { once: true });
     });
   }
-
 }
 
 // Main click event handler - optimized
@@ -301,8 +295,6 @@ class MusicPlayer {
         this.suffix = suffix;
         this.imageFolder = suffix === '2' ? 'ImagesDisguise/' : 'Images/';
         this.audioManager = new AudioManager();
-        // Cloudflare R2 bucket URL for audio files
-        this.audioBaseUrl = 'https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/';
         
         this.cacheElements();
         this.initState();
@@ -424,8 +416,8 @@ class MusicPlayer {
             this.createImageElement(src, type);
         this.coverArea.appendChild(mediaElement);
 
-        // Load audio from Cloudflare R2 bucket
-        this.mainAudio.src = `${this.audioBaseUrl}${src}.mp3`;
+        // Preload audio and video
+        this.mainAudio.src = `Audio/${src}.mp3`;
         if (this.videoAd) {
             this.videoAd.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.mp4`;
         }
@@ -533,42 +525,32 @@ class MusicPlayer {
     }, 100);
 
     handleRepeat() {
-      switch (this.repeatBtn.textContent) {
-          case "repeat":
-              this.repeatBtn.textContent = "repeat_one";
-              this.repeatBtn.title = "Song looped";
-              break;
-          case "repeat_one":
-              this.repeatBtn.textContent = "shuffle";
-              this.repeatBtn.title = "Playback shuffled";
-              this.isShuffleMode = true;
-  
-              const currentMusic = this.originalOrder[this.musicIndex - 1];
-              this.shuffledOrder = [...this.originalOrder]
-                  .filter(m => m !== currentMusic)
-                  .sort(() => Math.random() - 0.5);
-              this.shuffledOrder.unshift(currentMusic);
-              this.musicIndex = 1;
-  
-              this.populateMusicList(this.shuffledOrder);
-              this.loadMusic(this.musicIndex);
-              this.playMusic();
-              break;
-          case "shuffle":
-              this.repeatBtn.textContent = "repeat";
-              this.repeatBtn.title = "Playlist looped";
-              this.isShuffleMode = false;
-  
-              const currentMusicShuffled = this.shuffledOrder[this.musicIndex - 1];
-              const originalIndex = this.originalOrder.findIndex(m => m === currentMusicShuffled);
-              this.musicIndex = originalIndex + 1;
-  
-              this.populateMusicList(this.originalOrder);
-              this.loadMusic(this.musicIndex);
-              this.playMusic();
-              break;
-      }
-  }  
+        switch (this.repeatBtn.textContent) {
+            case "repeat":
+                this.repeatBtn.textContent = "repeat_one";
+                this.repeatBtn.title = "Song looped";
+                break;
+            case "repeat_one":
+                this.repeatBtn.textContent = "shuffle";
+                this.repeatBtn.title = "Playback shuffled";
+                this.isShuffleMode = true;
+                this.shuffledOrder = [...this.originalOrder].sort(() => Math.random() - 0.5);
+                this.musicIndex = 1;
+                this.loadMusic(this.musicIndex);
+                this.populateMusicList(this.shuffledOrder);
+                this.playMusic();
+                break;
+            case "shuffle":
+                this.repeatBtn.textContent = "repeat";
+                this.repeatBtn.title = "Playlist looped";
+                this.isShuffleMode = false;
+                this.musicIndex = 1;
+                this.loadMusic(this.musicIndex);
+                this.populateMusicList(this.originalOrder);
+                this.playMusic();
+                break;
+        }
+    }
 
     handleSongEnd() {
         const mode = this.repeatBtn.textContent;
@@ -595,40 +577,53 @@ class MusicPlayer {
     }
 
     populateMusicList(musicArray) {
-      this.ulTag.innerHTML = "";
+        const fragment = document.createDocumentFragment();
       
-      requestIdleCallback(() => {
-          musicArray.forEach((music, i) => {
-              const liTag = document.createElement("li");
-              liTag.setAttribute("li-index", i + 1);
-  
-              liTag.innerHTML = `
-                  <div class="row">
-                      <span>${music.name}</span>
-                      <p>${music.artist}</p>
-                  </div>
-                  <span class="audio-duration" data-src="${music.src}">...</span>
-              `;
-  
-              liTag.addEventListener("click", () => {
-                  this.musicIndex = i + 1;
-                  this.loadMusic(this.musicIndex);
-                  this.playMusic();
-              });
-  
-              this.ulTag.appendChild(liTag);
-  
-              const durationSpan = liTag.querySelector(".audio-duration");
-              this.audioManager.getDuration(music.src).then(duration => {
-                  const totalMin = Math.floor(duration / 60);
-                  const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
-                  durationSpan.textContent = `${totalMin}:${totalSec}`;
-              });
+        // Create an array of promises to load all durations
+        const durationPromises = musicArray.map((music) => {
+          return new Promise((resolve) => {
+            const tempAudio = new Audio(`Audio/${music.src}.mp3`);
+            tempAudio.addEventListener("loadedmetadata", () => {
+              const duration = tempAudio.duration;
+              if (!isNaN(duration) && isFinite(duration)) {
+                const totalMin = Math.floor(duration / 60);
+                const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
+                resolve(`${totalMin}:${totalSec}`);
+              } else {
+                resolve("0:00");
+              }
+            });
+            tempAudio.addEventListener("error", () => resolve("0:00"));
           });
-  
-          this.updatePlayingSong();
-      });
-  }            
+        });
+      
+        // Once all durations are loaded
+        Promise.all(durationPromises).then((durations) => {
+          musicArray.forEach((music, i) => {
+            const liTag = document.createElement("li");
+            liTag.setAttribute("li-index", i + 1);
+      
+            liTag.innerHTML = `
+              <div class="row">
+                <span>${music.name}</span>
+                <p>${music.artist}</p>
+              </div>
+              <span class="audio-duration" data-src="${music.src}">${durations[i]}</span>
+            `;
+      
+            liTag.addEventListener("click", () => {
+              this.musicIndex = i + 1;
+              this.loadMusic(this.musicIndex);
+              this.playMusic();
+            });
+      
+            fragment.appendChild(liTag);
+          });
+      
+          this.ulTag.innerHTML = "";
+          this.ulTag.appendChild(fragment);
+        });
+    }        
 
     updatePlayingSong() {
         const allLiTags = this.ulTag.querySelectorAll("li");
