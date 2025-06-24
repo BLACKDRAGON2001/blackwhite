@@ -343,6 +343,13 @@ let allMusic = [
     },
 
     {
+        name: "All The Stars",
+        artist: "SZA And Kendrick Lamar",
+        src: "AllTheStars",
+        coverType: "Images"
+    },
+
+    {
         name: "Make You Mine",
         artist: "Madison Beer",
         src: "MakeYouMine",
@@ -962,6 +969,13 @@ let allMusic = [
         name: "Killa Killa",
         artist: "KSI and Aiyana",
         src: "KillaKilla",
+        coverType: "Images"
+    },
+
+    {
+        name: "Kick Down The Door",
+        artist: "HJ And AJ Jung",
+        src: "KickDownTheDoor",
         coverType: "Images"
     },
 
