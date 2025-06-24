@@ -121,6 +121,8 @@ class AudioManager {
     this.audioCache = new Map();
     this.preloadQueue = [];
     this.maxCacheSize = 5;
+    // Cloudflare R2 bucket URL for audio files
+    this.audioBaseUrl = 'https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/';
   }
 
   // Preload audio with priority queue
@@ -128,7 +130,7 @@ class AudioManager {
     if (this.audioCache.has(src)) return Promise.resolve(this.audioCache.get(src));
     
     return new Promise((resolve, reject) => {
-      const audio = new Audio(`Audio/${src}.mp3`);
+      const audio = new Audio(`${this.audioBaseUrl}${src}.mp3`);
       audio.preload = 'auto';
       
       const cleanup = () => {
@@ -167,7 +169,7 @@ class AudioManager {
         return;
       }
 
-      const audio = new Audio(`Audio/${src}.mp3`);
+      const audio = new Audio(`${this.audioBaseUrl}${src}.mp3`);
       audio.addEventListener('loadedmetadata', () => {
         const duration = isNaN(audio.duration) ? 0 : audio.duration;
         resolve(duration);
@@ -295,6 +297,8 @@ class MusicPlayer {
         this.suffix = suffix;
         this.imageFolder = suffix === '2' ? 'ImagesDisguise/' : 'Images/';
         this.audioManager = new AudioManager();
+        // Cloudflare R2 bucket URL for audio files
+        this.audioBaseUrl = 'https://pub-c755c6dec2fa41a5a9f9a659408e2150.r2.dev/';
         
         this.cacheElements();
         this.initState();
@@ -416,8 +420,8 @@ class MusicPlayer {
             this.createImageElement(src, type);
         this.coverArea.appendChild(mediaElement);
 
-        // Preload audio and video
-        this.mainAudio.src = `Audio/${src}.mp3`;
+        // Load audio from Cloudflare R2 bucket
+        this.mainAudio.src = `${this.audioBaseUrl}${src}.mp3`;
         if (this.videoAd) {
             this.videoAd.src = `https://pub-fb9b941e940b4b44a61b7973d5ba28c3.r2.dev/${src}.mp4`;
         }
@@ -582,7 +586,8 @@ class MusicPlayer {
         // Create an array of promises to load all durations
         const durationPromises = musicArray.map((music) => {
           return new Promise((resolve) => {
-            const tempAudio = new Audio(`Audio/${music.src}.mp3`);
+            // Load duration from Cloudflare R2 bucket
+            const tempAudio = new Audio(`${this.audioBaseUrl}${music.src}.mp3`);
             tempAudio.addEventListener("loadedmetadata", () => {
               const duration = tempAudio.duration;
               if (!isNaN(duration) && isFinite(duration)) {
