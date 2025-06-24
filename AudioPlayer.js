@@ -119,6 +119,7 @@ const DOMUtils = {
 class AudioManager {
   constructor() {
     this.audioCache = new Map();
+    this.durationCache = new Map();
     this.preloadQueue = [];
     this.maxCacheSize = 5;
     // Cloudflare R2 bucket URL for audio files
@@ -163,20 +164,23 @@ class AudioManager {
   }
 
   getDuration(src) {
-    return new Promise((resolve) => {
-      if (this.audioCache.has(src)) {
-        resolve(this.audioCache.get(src).duration);
-        return;
-      }
+    if (this.durationCache.has(src)) return Promise.resolve(this.durationCache.get(src));
 
-      const audio = new Audio(`${this.audioBaseUrl}${src}.mp3`);
-      audio.addEventListener('loadedmetadata', () => {
+    return new Promise((resolve) => {
+      const audio = document.createElement('audio');
+      audio.preload = 'metadata';
+      audio.src = `${this.audioBaseUrl}${src}.mp3`;
+
+      audio.onloadedmetadata = () => {
         const duration = isNaN(audio.duration) ? 0 : audio.duration;
+        this.durationCache.set(src, duration);
         resolve(duration);
-      }, { once: true });
-      audio.addEventListener('error', () => resolve(0), { once: true });
+      };
+
+      audio.onerror = () => resolve(0);
     });
   }
+
 }
 
 // Main click event handler - optimized
@@ -591,39 +595,40 @@ class MusicPlayer {
     }
 
     populateMusicList(musicArray) {
-      this.ulTag.innerHTML = ""; // Clear first
+      this.ulTag.innerHTML = "";
+      
+      requestIdleCallback(() => {
+          musicArray.forEach((music, i) => {
+              const liTag = document.createElement("li");
+              liTag.setAttribute("li-index", i + 1);
   
-      musicArray.forEach((music, i) => {
-          const liTag = document.createElement("li");
-          liTag.setAttribute("li-index", i + 1);
+              liTag.innerHTML = `
+                  <div class="row">
+                      <span>${music.name}</span>
+                      <p>${music.artist}</p>
+                  </div>
+                  <span class="audio-duration" data-src="${music.src}">...</span>
+              `;
   
-          liTag.innerHTML = `
-              <div class="row">
-                  <span>${music.name}</span>
-                  <p>${music.artist}</p>
-              </div>
-              <span class="audio-duration" data-src="${music.src}">...</span>
-          `;
+              liTag.addEventListener("click", () => {
+                  this.musicIndex = i + 1;
+                  this.loadMusic(this.musicIndex);
+                  this.playMusic();
+              });
   
-          liTag.addEventListener("click", () => {
-              this.musicIndex = i + 1;
-              this.loadMusic(this.musicIndex);
-              this.playMusic();
+              this.ulTag.appendChild(liTag);
+  
+              const durationSpan = liTag.querySelector(".audio-duration");
+              this.audioManager.getDuration(music.src).then(duration => {
+                  const totalMin = Math.floor(duration / 60);
+                  const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
+                  durationSpan.textContent = `${totalMin}:${totalSec}`;
+              });
           });
   
-          this.ulTag.appendChild(liTag);
-  
-          // Lazy load duration
-          const durationSpan = liTag.querySelector(".audio-duration");
-          this.audioManager.getDuration(music.src).then(duration => {
-              const totalMin = Math.floor(duration / 60);
-              const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
-              durationSpan.textContent = isNaN(duration) ? "0:00" : `${totalMin}:${totalSec}`;
-          });
+          this.updatePlayingSong();
       });
-  
-      this.updatePlayingSong();
-  }          
+  }            
 
     updatePlayingSong() {
         const allLiTags = this.ulTag.querySelectorAll("li");
