@@ -336,7 +336,14 @@ function resetPlayer(player) {
                 this.musicIndex = 1;
                 this.loadMusic(this.musicIndex);
                 this.populateMusicList(this.shuffledOrder);
-                this.playMusic();
+
+                this.mainAudio.play().then(() => {
+                this.isMusicPaused = false;
+                this.wrapper.classList.add("paused");
+                this.playPauseBtn.querySelector("i").textContent = "pause";
+                }).catch(err => {
+                console.warn("Autoplay failed, awaiting user interaction:", err);
+                });
                 break;
             case "shuffle":
                 this.repeatBtn.textContent = "repeat";
@@ -463,13 +470,19 @@ function resetPlayer(player) {
   
     handleAudioPause() {
         this.muteButton.disabled = false;
-        this.pauseMusic();
+        this.wrapper.classList.remove("paused");
+        this.playPauseBtn.querySelector("i").textContent = "play_arrow";
+        this.isMusicPaused = true;
+        localStorage.setItem(`isMusicPaused${this.suffix}`, "true");
     }
-  
+    
     handleAudioPlay() {
         this.muteButton.disabled = true;
-        this.playMusic();
-    }
+        this.wrapper.classList.add("paused");
+        this.playPauseBtn.querySelector("i").textContent = "pause";
+        this.isMusicPaused = false;
+        localStorage.setItem(`isMusicPaused${this.suffix}`, "false");
+    }    
   
     handleVideoEnd() {
         this.muteButton.disabled = false;
