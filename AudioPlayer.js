@@ -529,32 +529,42 @@ class MusicPlayer {
     }, 100);
 
     handleRepeat() {
-        switch (this.repeatBtn.textContent) {
-            case "repeat":
-                this.repeatBtn.textContent = "repeat_one";
-                this.repeatBtn.title = "Song looped";
-                break;
-            case "repeat_one":
-                this.repeatBtn.textContent = "shuffle";
-                this.repeatBtn.title = "Playback shuffled";
-                this.isShuffleMode = true;
-                this.shuffledOrder = [...this.originalOrder].sort(() => Math.random() - 0.5);
-                this.musicIndex = 1;
-                this.loadMusic(this.musicIndex);
-                this.populateMusicList(this.shuffledOrder);
-                this.playMusic();
-                break;
-            case "shuffle":
-                this.repeatBtn.textContent = "repeat";
-                this.repeatBtn.title = "Playlist looped";
-                this.isShuffleMode = false;
-                this.musicIndex = 1;
-                this.loadMusic(this.musicIndex);
-                this.populateMusicList(this.originalOrder);
-                this.playMusic();
-                break;
-        }
-    }
+      switch (this.repeatBtn.textContent) {
+          case "repeat":
+              this.repeatBtn.textContent = "repeat_one";
+              this.repeatBtn.title = "Song looped";
+              break;
+          case "repeat_one":
+              this.repeatBtn.textContent = "shuffle";
+              this.repeatBtn.title = "Playback shuffled";
+              this.isShuffleMode = true;
+  
+              const currentMusic = this.originalOrder[this.musicIndex - 1];
+              this.shuffledOrder = [...this.originalOrder]
+                  .filter(m => m !== currentMusic)
+                  .sort(() => Math.random() - 0.5);
+              this.shuffledOrder.unshift(currentMusic);
+              this.musicIndex = 1;
+  
+              this.populateMusicList(this.shuffledOrder);
+              this.loadMusic(this.musicIndex);
+              this.playMusic();
+              break;
+          case "shuffle":
+              this.repeatBtn.textContent = "repeat";
+              this.repeatBtn.title = "Playlist looped";
+              this.isShuffleMode = false;
+  
+              const currentMusicShuffled = this.shuffledOrder[this.musicIndex - 1];
+              const originalIndex = this.originalOrder.findIndex(m => m === currentMusicShuffled);
+              this.musicIndex = originalIndex + 1;
+  
+              this.populateMusicList(this.originalOrder);
+              this.loadMusic(this.musicIndex);
+              this.playMusic();
+              break;
+      }
+  }  
 
     handleSongEnd() {
         const mode = this.repeatBtn.textContent;
@@ -581,54 +591,39 @@ class MusicPlayer {
     }
 
     populateMusicList(musicArray) {
-        const fragment = document.createDocumentFragment();
-      
-        // Create an array of promises to load all durations
-        const durationPromises = musicArray.map((music) => {
-          return new Promise((resolve) => {
-            // Load duration from Cloudflare R2 bucket
-            const tempAudio = new Audio(`${this.audioBaseUrl}${music.src}.mp3`);
-            tempAudio.addEventListener("loadedmetadata", () => {
-              const duration = tempAudio.duration;
-              if (!isNaN(duration) && isFinite(duration)) {
-                const totalMin = Math.floor(duration / 60);
-                const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
-                resolve(`${totalMin}:${totalSec}`);
-              } else {
-                resolve("0:00");
-              }
-            });
-            tempAudio.addEventListener("error", () => resolve("0:00"));
-          });
-        });
-      
-        // Once all durations are loaded
-        Promise.all(durationPromises).then((durations) => {
-          musicArray.forEach((music, i) => {
-            const liTag = document.createElement("li");
-            liTag.setAttribute("li-index", i + 1);
-      
-            liTag.innerHTML = `
+      this.ulTag.innerHTML = ""; // Clear first
+  
+      musicArray.forEach((music, i) => {
+          const liTag = document.createElement("li");
+          liTag.setAttribute("li-index", i + 1);
+  
+          liTag.innerHTML = `
               <div class="row">
-                <span>${music.name}</span>
-                <p>${music.artist}</p>
+                  <span>${music.name}</span>
+                  <p>${music.artist}</p>
               </div>
-              <span class="audio-duration" data-src="${music.src}">${durations[i]}</span>
-            `;
-      
-            liTag.addEventListener("click", () => {
+              <span class="audio-duration" data-src="${music.src}">...</span>
+          `;
+  
+          liTag.addEventListener("click", () => {
               this.musicIndex = i + 1;
               this.loadMusic(this.musicIndex);
               this.playMusic();
-            });
-      
-            fragment.appendChild(liTag);
           });
-      
-          this.ulTag.innerHTML = "";
-          this.ulTag.appendChild(fragment);
-        });
-    }        
+  
+          this.ulTag.appendChild(liTag);
+  
+          // Lazy load duration
+          const durationSpan = liTag.querySelector(".audio-duration");
+          this.audioManager.getDuration(music.src).then(duration => {
+              const totalMin = Math.floor(duration / 60);
+              const totalSec = Math.floor(duration % 60).toString().padStart(2, "0");
+              durationSpan.textContent = isNaN(duration) ? "0:00" : `${totalMin}:${totalSec}`;
+          });
+      });
+  
+      this.updatePlayingSong();
+  }          
 
     updatePlayingSong() {
         const allLiTags = this.ulTag.querySelectorAll("li");
